@@ -13,7 +13,7 @@ describe('backend-express-template routes', () => {
     return setup(pool);
   });
 
-  it('POST / creates a new user', () => {
+  it('POST / creates a new user', async () => {
     const res = await request(app)
     .post('/api/v1/users')
     .send(robotUser);
