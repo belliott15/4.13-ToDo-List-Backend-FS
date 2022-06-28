@@ -5,8 +5,10 @@ const app = require('../lib/app');
 
 const robotUser = {
   email: 'mr.roboto@sentient.robot',
-  password: '123456'
-}
+  password: '123456', 
+  firstName: 'Roberto',
+  lastName: 'Machinero'
+};
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
@@ -15,12 +17,15 @@ describe('backend-express-template routes', () => {
 
   it('POST / creates a new user', async () => {
     const res = await request(app)
-    .post('/api/v1/users')
-    .send(robotUser);
+      .post('/api/v1/users')
+      .send(robotUser);
 
+    expect(res.status).toEqual(200);
     expect(res.body).toEqual({
       id: expect.any(String),
-      email
+      email: 'mr.roboto@sentient.robot',
+      firstName: 'Roberto',
+      lastName: 'Machinero'
     });
   });
 
