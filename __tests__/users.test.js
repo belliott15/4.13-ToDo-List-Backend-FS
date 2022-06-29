@@ -19,9 +19,9 @@ const registerAndLogin = async (userProps = {}) => {
   const user = await UserService.create({ ...robotUser, ...userProps });
 
   const { email } = user;
-  await (await agent.post('/api/v1/users/sessions')).setEncoding({ email, password });
+  await agent.post('/api/v1/users/sessions').send({ email, password });
   return [agent, user];
-}
+};
 
 describe('backend-express-template routes', () => {
   beforeEach(() => {
