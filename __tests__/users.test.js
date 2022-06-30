@@ -46,6 +46,7 @@ describe('backend-express-template routes', () => {
     const [agent, user] = await registerAndLogin();
     const currentUser = await agent
       .get('/api/v1/users/currentUser');
+    console.log('currentUser', currentUser.body);
     expect(currentUser.status).toEqual(200);
     expect(currentUser.body).toEqual({
       ...user, 
@@ -53,6 +54,8 @@ describe('backend-express-template routes', () => {
       iat: expect.any(Number)
     });
   });
+
+
 
   afterAll(() => {
     pool.end();
