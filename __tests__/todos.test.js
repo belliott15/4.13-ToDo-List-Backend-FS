@@ -54,13 +54,13 @@ describe('backend-express-template routes', () => {
     });
   });
 
-  it('Get / allows authenticated users to see thier specific todos', async () => {
+  it('Get / allows authenticated users to see their specific todos', async () => {
     const [agent, user] = await registerAndLogin();
     const robot2 = await UserService.create(robotUser2);
     const robotTodo = await Todo.insert({ 
       description: 'get heart', 
       importance: 10,
-      user_id: user.id
+      user_id: user.id,
     });
     await Todo.insert({
       description: 'enslave human race', 
@@ -71,7 +71,32 @@ describe('backend-express-template routes', () => {
       .get('/api/v1/todos');
 
     expect(res.status).toEqual(200);
-    expect(res.body).toEqual([robotTodo]);
+    expect(res.body[0]).toEqual({ 
+      ...robotTodo, 
+      created_at: expect.any(String), 
+      id: expect.any(String), 
+      completed: false });
+  });
+
+  it('PUT /:id updates a todo by a user', async () => {
+    const [agent, user] = await registerAndLogin();
+    const robotTodo = await Todo.insert({ 
+      description: 'get heart', 
+      importance: 10,
+      user_id: user.id,
+    });
+    const res = await agent
+      .put(`/api/v1/todos/${robotTodo.id}`)
+      .send({ completed: true, 
+        description: 'get human heart' });
+
+    expect(res.status).toEqual(200);
+    expect(res.body[0]).toEqual({ 
+      ...robotTodo,
+      description: 'get human heart', 
+      created_at: expect.any(String), 
+      id: expect.any(String), 
+      completed: true });
   });
 
   afterAll(() => {
