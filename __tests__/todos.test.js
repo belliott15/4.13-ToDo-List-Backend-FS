@@ -30,7 +30,7 @@ describe('backend-express-template routes', () => {
 
   it('POST / allows authenticated users to post todos', async () => {
     const [agent, user] = await registerAndLogin();
-    const todo = { desciption: 'Wash the car', importance: 3 }; 
+    const todo = { description: 'Wash the car', importance: 3 }; 
     const res = await agent
       .post('/api/v1/todos')
       .send(todo);
