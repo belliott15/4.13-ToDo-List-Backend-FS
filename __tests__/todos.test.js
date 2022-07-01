@@ -105,7 +105,7 @@ describe('backend-express-template routes', () => {
       user_id: user.id,
     });
     const res = await agent
-      .put(`/api/v1/todos/${robotTodo.id}`);
+      .delete(`/api/v1/todos/${robotTodo.id}`);
 
     expect(res.status).toEqual(200);
     const deletedTodo = await Todo.getById(robotTodo.id);
