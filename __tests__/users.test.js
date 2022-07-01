@@ -7,8 +7,8 @@ const UserService = require('../lib/services/UserServices');
 const robotUser = {
   email: 'mr.roboto@sentient.robot',
   password: '123456', 
-  firstName: 'Roberto',
-  lastName: 'Machinero'
+  first_name: 'Roberto',
+  last_name: 'Machinero'
 };
 
 const registerAndLogin = async (userProps = {}) => {
@@ -18,8 +18,8 @@ const registerAndLogin = async (userProps = {}) => {
 
   const user = await UserService.create({ ...robotUser, ...userProps });
 
-  const { email } = user;
-  await agent.post('/api/v1/users/sessions').send({ email, password });
+  const { email, first_name, last_name } = user;
+  await agent.post('/api/v1/users/sessions').send({ email, password, first_name, last_name });
   return [agent, user];
 };
 
@@ -37,8 +37,8 @@ describe('backend-express-template routes', () => {
     expect(res.body).toEqual({
       id: expect.any(String),
       email: 'mr.roboto@sentient.robot',
-      firstName: 'Roberto',
-      lastName: 'Machinero'
+      first_name: 'Roberto',
+      last_name: 'Machinero'
     });
   });
 
@@ -46,7 +46,7 @@ describe('backend-express-template routes', () => {
     const [agent, user] = await registerAndLogin();
     const currentUser = await agent
       .get('/api/v1/users/currentUser');
-    console.log('currentUser', currentUser.body);
+
     expect(currentUser.status).toEqual(200);
     expect(currentUser.body).toEqual({
       ...user, 
@@ -55,7 +55,18 @@ describe('backend-express-template routes', () => {
     });
   });
 
+  it('DELETE / drops the current user and removes the cookie', async () => {
+    const [agent, user] = await registerAndLogin();
+    const currentUser = await agent
+      .delete('/api/v1/users');
 
+    expect(currentUser.status).toEqual(200);
+    expect(currentUser.body).toEqual({
+      ...user, 
+      exp: expect.any(Number),
+      iat: expect.any(Number)
+    });
+  });
 
   afterAll(() => {
     pool.end();
