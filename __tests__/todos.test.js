@@ -112,6 +112,26 @@ describe('backend-express-template routes', () => {
     expect(deletedTodo).toBeNull();
   });
 
+  it('Get / return a 401 if not authenticated', async () => {
+    const res = await request(app).get('/api/v1/todos');
+    expect(res.status).toEqual(401);
+  });
+
+  it('PUT /:id returns a 403 if not authenticated', async () => {
+    const [agent] = await registerAndLogin();
+    const robot2 = await UserService.create(robotUser2);
+    const robotTodo = await Todo.insert({ 
+      description: 'get heart', 
+      importance: 10,
+      user_id: robot2.id,
+    });
+    const res = await agent
+      .put(`/api/v1/todos/${robotTodo.id}`)
+      .send({ completed: true });
+
+    expect(res.status).toEqual(403);
+  });
+
   afterAll(() => {
     pool.end();
   });
