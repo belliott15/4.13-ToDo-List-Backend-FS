@@ -87,16 +87,29 @@ describe('backend-express-template routes', () => {
     });
     const res = await agent
       .put(`/api/v1/todos/${robotTodo.id}`)
-      .send({ completed: true, 
-        description: 'get human heart' });
+      .send({ completed: true });
 
     expect(res.status).toEqual(200);
-    expect(res.body[0]).toEqual({ 
-      ...robotTodo,
-      description: 'get human heart', 
+    expect(res.body).toEqual({ 
+      ...robotTodo, 
       created_at: expect.any(String), 
       id: expect.any(String), 
       completed: true });
+  });
+
+  it('DELETE /:id removes a todo by a user', async () => {
+    const [agent, user] = await registerAndLogin();
+    const robotTodo = await Todo.insert({ 
+      description: 'get heart', 
+      importance: 10,
+      user_id: user.id,
+    });
+    const res = await agent
+      .put(`/api/v1/todos/${robotTodo.id}`);
+
+    expect(res.status).toEqual(200);
+    const deletedTodo = await Todo.getById(robotTodo.id);
+    expect(deletedTodo).toBeNull();
   });
 
   afterAll(() => {
