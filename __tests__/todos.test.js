@@ -39,9 +39,10 @@ describe('backend-express-template routes', () => {
     expect(res.body).toEqual({
       id: expect.any(String),
       description: 'Wash the car',
-      importance: '3', 
+      importance: 3, 
       user_id: user.id,
-      completed: false
+      completed: false,
+      created_at: expect.any(String)
     });
   });
 
