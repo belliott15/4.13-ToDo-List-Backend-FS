@@ -3,12 +3,20 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/UserServices');
+const Todo = require('../lib/models/Todo');
 
 const robotUser = {
-  email: 'mr.roboto@sentient.robot',
+  email: 'thisroboto@sentient.robot',
   password: '123456', 
-  first_name: 'Roberto',
+  first_name: 'Robertoa',
   last_name: 'Machinero'
+};
+
+const robotUser2 = {
+  email: 'roboto@sentient.robot',
+  password: '123456', 
+  first_name: 'Jamie',
+  last_name: 'Rachetson'
 };
 
 const registerAndLogin = async (userProps = {}) => {
@@ -44,6 +52,26 @@ describe('backend-express-template routes', () => {
       completed: false,
       created_at: expect.any(String)
     });
+  });
+
+  it('Get / allows authenticated users to see thier specific todos', async () => {
+    const [agent, user] = await registerAndLogin();
+    const robot2 = await UserService.create(robotUser2);
+    const robotTodo = await Todo.insert({ 
+      description: 'get heart', 
+      importance: 10,
+      user_id: user.id
+    });
+    await Todo.insert({
+      description: 'enslave human race', 
+      importance: 1,
+      user_id: robot2.id,
+    });
+    const res = await agent
+      .get('/api/v1/todos');
+
+    expect(res.status).toEqual(200);
+    expect(res.body).toEqual([robotTodo]);
   });
 
   afterAll(() => {
