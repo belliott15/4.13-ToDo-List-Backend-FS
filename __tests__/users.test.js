@@ -56,16 +56,12 @@ describe('backend-express-template routes', () => {
   });
 
   it('DELETE / drops the current user and removes the cookie', async () => {
-    const [agent, user] = await registerAndLogin();
-    const currentUser = await agent
-      .delete('/api/v1/users');
+    const [agent] = await registerAndLogin();
+    const deletedUser = await agent
+      .delete('/api/v1/users/sessions');
 
-    expect(currentUser.status).toEqual(200);
-    expect(currentUser.body).toEqual({
-      ...user, 
-      exp: expect.any(Number),
-      iat: expect.any(Number)
-    });
+    expect(deletedUser.status).toEqual(204);
+    expect(deletedUser.body).toEqual({});
   });
 
   afterAll(() => {
